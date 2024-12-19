@@ -26,54 +26,57 @@
     </head>
     <body>
         <header>
+        <div class="mx-auto p-2 mt-4" style="width: 200px;">
             <h1>
                 Censorship
             </h1>
+        </div>   
         </header>
-        <main>
+        <main class="container-lg">
             <form action="?" method="get">
-                <div>
+                <div class="mt-4">
                     <div>
-                        <label for="">Testo da modificare</label>
+                        <label for=""><h4>Testo da modificare</h4></label>
                     </div>
-                    <textarea name="paragraph" id="paragraph"placeholder="Inserisci il testo ..."></textarea>
+                    <textarea class="form-control" style="height: 100px" name="paragraph" id="paragraph" placeholder="Inserisci il testo ..."></textarea>
                 </div>
-                <div>
-                    <div>
-                        <label for="badword">Parola da censurare</label>
+                <div class="container text-center mt-4">
+                    <div class="row">
+                        <div class="col mt-4">
+                            <div>
+                                <label for="badword"><h4>Parola da censurare</h4></label>
+                            </div>
+                            <input type="text" name="badword" id="badword" placeholder="Inserisci parola...">
+                            <button type="submit">Invia</button>
+                        </div>
+                        <div class="col mt-4">
+                            <div>
+                                <label for="removeword"><h4>Parola da eliminare</h4></label>
+                            </div>
+                            <input type="text" name="removeword" id="removeword" placeholder="Inserisci parola...">
+                            <button type="submit">Invia</button>
+                        </div>
                     </div>
-                    <input type="text" name="badword" id="badword" placeholder="Inserisci parola da censurare...">
-                </div>
-                <div>
-                    <div>
-                        <label for="removeword">Parola da eliminare</label>
-                    </div>
-                    <input type="text" name="removeword" id="removeword" placeholder="Inserisci parola da eliminare...">
-                </div>
-                <div>
-                    <button type="submit">
-                        Invia
-                    </button>
                 </div>
             </form>
             <?php if ($originalParagraph !== '' || $badword !== ''): ?>
-                <div>
-                    <h2>Testo originale:</h2>
+                <div class="mt-4">
+                    <h4>Testo originale:</h4>
                     <p><?php echo $originalParagraph; ?></p>
                 </div>
                 <hr>
-                <div>
-                    <h2>Testo modificato:</h2>
+                <div class="mt-4">
+                    <h4>Testo modificato:</h4>
                     <p><?php echo $censoredParagraph; ?></p>
                 </div>
                 <?php if ($badword !== ''): ?>
-                    <div>
-                        <h3>Parola censurata: <?php echo $badword; ?></h3>
+                    <div class="mt-4">
+                        <h5>Parola censurata: <?php echo $badword; ?></h5>
                     </div>
                 <?php endif; ?>
                 <?php if ($removeword !== ''): ?>
-                    <div>
-                        <h3>Parola eliminata: <?php echo $removeword; ?></h3>
+                    <div class="mt-4">
+                        <h5>Parola eliminata: <?php echo $removeword; ?></h5>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
