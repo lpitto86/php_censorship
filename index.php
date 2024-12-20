@@ -10,7 +10,14 @@
 
     // Sostituisce la parola solo se fornita
     if ($badword !== '') {
-        $censoredParagraph = str_ireplace($badword, '*****', $originalParagraph);
+        $censoredParagraph = preg_replace_callback(
+            '/\b' . preg_quote($badword, '/') . '\b/i',
+            function ($matches) {
+                // Calcola la lunghezza della parola e genera spazi neri
+                return str_repeat('█', mb_strlen($matches[0])); // Usa il blocco nero Unicode
+            },
+            $originalParagraph
+        );
     }
 
     // Rimuove la parola solo se fornita
@@ -19,7 +26,7 @@
     }
 
     if ($underline !== '') {
-        $censoredParagraph = preg_replace('/\b' . preg_quote($underline, '/') . '\b/i', '<u>' . $underline . '</u>', $censoredParagraph);
+        $censoredParagraph = preg_replace('/\b' . preg_quote($underline, '/') . '\b/i', '<strong>' . $underline . '</strong>', $censoredParagraph);
     }
 
     // Sostituisce la parola con una nuova solo se entrambe sono fornite (case-insensitive)
@@ -68,7 +75,7 @@
                         </div>
                         <div class="col mt-4">
                             <div>
-                                <label for="underline"><h4>Parola da sottolineare</h4></label>
+                                <label for="underline"><h4>Parola da evidenziare</h4></label>
                             </div>
                             <input type="text" name="underline" id="underline" placeholder="Inserisci parola...">
                         </div>
@@ -89,33 +96,33 @@
                 </div>
             </form>
             <?php if ($originalParagraph !== '' || $badword !== ''): ?>
-                <div class="mt-4">
+                <div class="mt-4" id="result">
                     <h4>Testo originale:</h4>
                     <p><?php echo $originalParagraph; ?></p>
                 </div>
                 <hr>
-                <div class="mt-4">
+                <div class="mt-4" id="result">
                     <h4>Testo modificato:</h4>
                     <p><?php echo $censoredParagraph; ?></p>
                 </div>
                 <?php if ($badword !== ''): ?>
-                    <div class="mt-4">
-                        <h5>La parola censurata "<?php echo $badword; ?>" compare <?php echo substr_count(strtolower($originalParagraph), strtolower($badword)); ?> volte nel testo.</h5>
+                    <div class="mt-4" id="result">
+                        <h5>La parola "<?php echo $badword; ?>" è stata censurata <?php echo substr_count(strtolower($originalParagraph), strtolower($badword)); ?> volte nel testo.</h5>
                     </div>
                 <?php endif; ?>
                 <?php if ($removeword !== ''): ?>
-                    <div class="mt-4">
-                        <h5>La parola eliminata "<?php echo $removeword; ?>" compare <?php echo substr_count(strtolower($originalParagraph), strtolower($removeword)); ?> volte nel testo.</h5>
+                    <div class="mt-4" id="result">
+                        <h5>La parola "<?php echo $removeword; ?>" è stata elimminata <?php echo substr_count(strtolower($originalParagraph), strtolower($removeword)); ?> volte nel testo.</h5>
                     </div>
                 <?php endif; ?>
                 <?php if ($underline !== ''): ?>
-                    <div class="mt-4">
-                        <h5>La parola sottolineata "<?php echo $underline; ?>" compare <?php echo substr_count(strtolower($originalParagraph), strtolower($underline)); ?> volte nel testo.</h5>
+                    <div class="mt-4" id="result">
+                        <h5>La parola "<?php echo $underline; ?>" è stata evidenziata <?php echo substr_count(strtolower($originalParagraph), strtolower($underline)); ?> volte nel testo.</h5>
                     </div>
                 <?php endif; ?>
                 <?php if ($replaceword !== '' && $newword !== ''): ?>
-                    <div class="mt-4">
-                        <h5>La parola "<?php echo $replaceword; ?>" è stata sostituita con "<?php echo $newword; ?>".</h5>
+                    <div class="mt-4" id="result">
+                        <h5>La parola "<?php echo $replaceword; ?>" è stata sostituita con "<?php echo $newword; ?>" <?php echo substr_count(strtolower($censoredParagraph), strtolower($newword)); ?> volte nel testo.</h5>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -128,6 +135,18 @@
             document.getElementById('underline').value = "";
             document.getElementById('replaceword').value = "";
             document.getElementById('newword').value = "";
+
+            // Resetta le sezioni dei risultati
+            const resultIds = [
+                'result'
+            ];
+
+            resultIds.forEach(id => {
+                const section = document.getElementById(id);
+                if (section) {
+                    section.innerHTML = ""; // Svuota il contenuto
+                }
+            });
         </script>
     </body>
 </html>
