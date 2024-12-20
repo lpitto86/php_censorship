@@ -3,16 +3,28 @@
     $originalParagraph = isset($_GET['paragraph']) ? $_GET['paragraph'] : '';
     $badword = isset($_GET['badword']) ? $_GET['badword'] : '';
     $removeword = isset($_GET['removeword']) ? $_GET['removeword'] : '';
+    $underline = isset($_GET['underline']) ? $_GET['underline'] : '';
+    $replaceword = isset($_GET['replaceword']) ? $_GET['replaceword'] : '';
+    $newword = isset($_GET['newword']) ? $_GET['newword'] : '';
     $censoredParagraph = $originalParagraph;
 
     // Sostituisce la parola solo se fornita
     if ($badword !== '') {
-        $censoredParagraph = str_replace($badword, '*****', $originalParagraph);
+        $censoredParagraph = str_ireplace($badword, '*****', $originalParagraph);
     }
 
     // Rimuove la parola solo se fornita
     if ($removeword !== '') {
-        $censoredParagraph = str_replace($removeword, '', $censoredParagraph);
+        $censoredParagraph = str_ireplace($removeword, '', $censoredParagraph);
+    }
+
+    if ($underline !== '') {
+        $censoredParagraph = preg_replace('/\b' . preg_quote($underline, '/') . '\b/i', '<u>' . $underline . '</u>', $censoredParagraph);
+    }
+
+    // Sostituisce la parola con una nuova solo se entrambe sono fornite (case-insensitive)
+    if ($replaceword !== '' && $newword !== '') {
+        $censoredParagraph = str_ireplace($replaceword, $newword, $censoredParagraph);
     }
 ?>
 
@@ -47,15 +59,32 @@
                                 <label for="badword"><h4>Parola da censurare</h4></label>
                             </div>
                             <input type="text" name="badword" id="badword" placeholder="Inserisci parola...">
-                            <button type="submit">Invia</button>
                         </div>
                         <div class="col mt-4">
                             <div>
                                 <label for="removeword"><h4>Parola da eliminare</h4></label>
                             </div>
                             <input type="text" name="removeword" id="removeword" placeholder="Inserisci parola...">
-                            <button type="submit">Invia</button>
                         </div>
+                        <div class="col mt-4">
+                            <div>
+                                <label for="underline"><h4>Parola da sottolineare</h4></label>
+                            </div>
+                            <input type="text" name="underline" id="underline" placeholder="Inserisci parola...">
+                        </div>
+                        <div class="col mt-4">
+                            <div>
+                                <label for="replaceword"><h4>Parola da sostituire</h4></label>
+                            </div>
+                            <input type="text" name="replaceword" id="replaceword" placeholder="Parola da sostituire...">
+                            <input type="text" name="newword" id="newword" placeholder="Nuova parola...">
+                            <div>
+                                <label for="newword"><h4>Nuova parola</h4></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mx-auto p-2 mt-4" >
+                        <button class="btn btn-primary btn-lg" type="submit">Invia</button>
                     </div>
                 </div>
             </form>
@@ -71,12 +100,22 @@
                 </div>
                 <?php if ($badword !== ''): ?>
                     <div class="mt-4">
-                        <h5>Parola censurata: <?php echo $badword; ?></h5>
+                        <h5>La parola censurata "<?php echo $badword; ?>" compare <?php echo substr_count(strtolower($originalParagraph), strtolower($badword)); ?> volte nel testo.</h5>
                     </div>
                 <?php endif; ?>
                 <?php if ($removeword !== ''): ?>
                     <div class="mt-4">
-                        <h5>Parola eliminata: <?php echo $removeword; ?></h5>
+                        <h5>La parola eliminata "<?php echo $removeword; ?>" compare <?php echo substr_count(strtolower($originalParagraph), strtolower($removeword)); ?> volte nel testo.</h5>
+                    </div>
+                <?php endif; ?>
+                <?php if ($underline !== ''): ?>
+                    <div class="mt-4">
+                        <h5>La parola sottolineata "<?php echo $underline; ?>" compare <?php echo substr_count(strtolower($originalParagraph), strtolower($underline)); ?> volte nel testo.</h5>
+                    </div>
+                <?php endif; ?>
+                <?php if ($replaceword !== '' && $newword !== ''): ?>
+                    <div class="mt-4">
+                        <h5>La parola "<?php echo $replaceword; ?>" è stata sostituita con "<?php echo $newword; ?>".</h5>
                     </div>
                 <?php endif; ?>
             <?php endif; ?>
@@ -86,6 +125,9 @@
             document.getElementById('paragraph').value = "";
             document.getElementById('badword').value = "";
             document.getElementById('removeword').value = "";
+            document.getElementById('underline').value = "";
+            document.getElementById('replaceword').value = "";
+            document.getElementById('newword').value = "";
         </script>
     </body>
 </html>
